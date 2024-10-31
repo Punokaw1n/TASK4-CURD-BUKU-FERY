@@ -1,0 +1,432 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Book Management API",
+    "description": "API untuk manajemen buku dengan fitur CRUD dan autentikasi",
+    "contact": {
+      "name": "Fery Yulia Rahman",
+      "url": "http://example.com",
+      "email": "feryyuliarahman11@gmail.com"
+    }
+  },
+  "host": "localhost:5000",
+  "basePath": "/api/book",
+  "schemes": ["http"],
+  "paths": {
+    "/register": {
+      "post": {
+        "summary": "register pengguna",
+        "description": "register page pengguna",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "register pengguna",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "paswword": {
+                  "type": "string"
+                }
+              },
+              "required": ["username", "password"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "register success"
+                }
+              }
+            },
+            "description": "register berhasil"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "register gagal"
+                }
+              }
+            },
+            "description": "register gagal"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login pengguna",
+        "description": "Mengautentikasi pengguna dan membuat sesi.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objek login pengguna",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "required": ["username", "password"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "login success"
+                }
+              }
+            },
+            "description": "Login berhasil"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "login gagal password atau username yang anda masukan salah"
+                }
+              }
+            },
+            "description": "Login gagal"
+          }
+        }
+      }
+    },
+
+    "/books": {
+      "get": {
+        "summary": "Dapatkan daftar semua buku",
+        "description": "Mengambil semua buku yang tersimpan.",
+        "responses": {
+          "200": {
+            "description": "Daftar buku",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Book"
+              }
+            }
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku gagal di simpan"
+                }
+              }
+            },
+            "description": "data buku gagal di simpan"
+          }
+        }
+      },
+      "post": {
+        "summary": "Tambahkan buku baru",
+        "description": "Menambahkan buku baru ke database (memerlukan autentikasi).",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objek buku baru",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku success terbuat"
+                }
+              }
+            },
+            "description": "Buku berhasil ditambahkan"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "nama buku sudah ada, masukan nama lain"
+                }
+              }
+            },
+            "description": "Judul buku sudah ada"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku gagal ditambahkan"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "summary": "Dapatkan detail buku berdasarkan ID",
+        "description": "Mengambil buku berdasarkan ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail buku",
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku tidak ada"
+                }
+              }
+            },
+            "description": "Buku tidak ditemukan"
+          }
+        }
+      },
+      "put": {
+        "summary": "Perbarui buku",
+        "description": "Memperbarui detail buku berdasarkan ID (memerlukan autentikasi).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objek buku yang diperbarui",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Book"
+            },
+            "description": "Buku berhasil diperbarui"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku tidak terupdate"
+                }
+              }
+            },
+            "description": "Buku tidak ditemukan"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku tidak terupdate"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus buku",
+        "description": "Menghapus buku berdasarkan ID (memerlukan autentikasi).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objek buku yang dihapus",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku terhapus"
+                }
+              }
+            },
+            "description": "Buku berhasil dihapus"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku tidak ditemukan"
+                }
+              }
+            },
+            "description": "Buku tidak ditemukan"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "data buku tidak ditemukan"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Book": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "title", "author", "publishedDate"]
+    }
+  }
+}
